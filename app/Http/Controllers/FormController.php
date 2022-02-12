@@ -128,7 +128,7 @@ class FormController extends Controller
                         $model->modified_by = Auth::user()->id;
                         $model->created_by  = Auth::user()->id;
                     }
-                    $sort          = DynamicFormField::all()->count() + 1;
+                    $sort          = DynamicFormField::where('form_id', $request->form_id)->count() + 1;
                     $options       = $request->type_value;
                     $filtered_data = $options != null ? array_filter($options) : null;
                     $count         = $filtered_data != null ? count(array_filter($options)) : 0;
