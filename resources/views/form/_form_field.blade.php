@@ -3,9 +3,10 @@ use App\Http\Models\StaticData;
 @endphp
 {{Form::model($model, array('id'=>'createFormFields','files'=>true))}}
 @csrf 
-    <h3>Add fields for {{$modelForm->name}}</h3> <a href="{{route('home')}}">back</a>
+    <h3>Manage fields for {{$modelForm->name}}</h3> <a href="{{route('home')}}">back</a>
     <a href="{{route('viewForm', ['form_id'=>$modelForm->id])}}">view form</a>
-
+    <i>both create and update managed in same form</i>
+    <hr>
     <div class="row">
         <div class="col-sm-4">
             <div class="form-group">
@@ -45,7 +46,7 @@ use App\Http\Models\StaticData;
         </div>
     </div>
 {{ Form::close()}}
-
+<hr>
 @if($fields->isNotEmpty() )
     <h3>Field List</h3>
     <table id="fieldTable" style="font-size: 15px;width:50%" border="1" cellspacing="">
