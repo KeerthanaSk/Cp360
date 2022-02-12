@@ -187,7 +187,8 @@ class FormController extends Controller
     {
         try {
             $modelForm  = DynamicForm::findOrFail($request->form_id);
-            $modelFormFields = DynamicFormField::where('form_id', $request->form_id)->orderBy('sort_order','ASC')->get();
+            $modelFormFields = DynamicFormField::where('form_id', $request->form_id)
+                                ->where('status', 1)->orderBy('sort_order','ASC')->get();
             return view('form._view', compact('modelFormFields', 'modelForm'));
         }catch (Exception $e) {
             return (new Responses)->sendError(404);
@@ -235,6 +236,29 @@ class FormController extends Controller
                 $model = DynamicFormField::where('id', $id)->first();
                 if(!empty($model)){
                     $model->sort_order = $order;
+                    $model->save();
+                    $response['status']  = 'success';
+                }
+                else{
+                    $response['status']  = 'error';
+                }
+                return response()->json($response);
+            }    
+        }catch (Exception $e) {
+            return (new Responses)->sendError(404);
+        }
+    }
+
+    //update status
+    public function updateStatus(Request $request)
+    {
+        try {
+            if($request->method() == 'GET'){
+                $id    = (int)$_GET['id'];
+                $val   = (int)$_GET['stat'];
+                $model = DynamicFormField::where('id', $id)->first();
+                if(!empty($model)){
+                    $model->status = $val;
                     $model->save();
                     $response['status']  = 'success';
                 }

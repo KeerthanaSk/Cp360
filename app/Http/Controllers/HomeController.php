@@ -24,7 +24,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $model  = DynamicForm::where('status','1')->get();
+        $model  = DynamicForm::where('status','1')->orderBy('id','DESC')->get();
         return view('home', compact('model'));
     }
 }

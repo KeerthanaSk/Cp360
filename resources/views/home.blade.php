@@ -68,10 +68,10 @@
                                 <tr>
                                     <td>{{ucfirst($row->name)}}</td>
                                     <td>
-                                        <a href="{{ url('addFormFields', ['id'=>$row->id])}}" class="button button1"> Manage Form Fields </a>
-                                        <a href="{{ url('viewForm', ['id'=>$row->id])}}" class="button button2"> View Form </a>
-                                        <a href="{{ url('editForm', ['id'=>$row->id])}}" class="button button3"> Edit Form </a>
-                                        <a href="javascript:void(0)" class="button button4 deleteBtn" id="delete-btn-{{$row->id}}" data-form-id="{{$row->id}}"> Delete </a>
+                                        <a href="{{ url('addFormFields', ['id'=>$row->id])}}" class="button button1" title="Manage"> Manage Form Fields </a>
+                                        <a href="{{ url('viewForm', ['id'=>$row->id])}}" class="button button2" title="View"> View Form </a>
+                                        <a href="{{ url('editForm', ['id'=>$row->id])}}" class="button button3" title="Edit"> Edit Form </a>
+                                        <a href="javascript:void(0)" class="button button4 deleteBtn" id="delete-btn-{{$row->id}}" data-form-id="{{$row->id}}" title="Delete"> Delete </a>
                                     </td>
                                 </tr>
                             @endforeach

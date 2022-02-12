@@ -92,7 +92,12 @@ use App\Http\Models\StaticData;
                     <td>{{StaticData::fieldTypes($row->type)}}</td>
                     <td>{{StaticData::isRequired($row->is_required)}}</td>
                     <td><input type="number" min="1" id="review_<?= $row->id ?>" class="list_order" data_value="<?= $row->id ?>" step="1" value="<?= $row->sort_order ?>" oninput="validity.valid||(value='');" style="width:20%"></td>
-                    <td>{{$row->status == 1 ? 'Active': 'Inactive'}}</td>
+                    <td>
+                        <select id="status_<?= $row->id ?>" name="status" data_value="<?= $row->id ?>" class="status">
+                            <option value="1" <?=$row->status == '1' ? "selected" : ''?>>Active</option>
+                            <option value="0" <?=$row->status == '0' ? "selected" : ''?>>Inactive</option>
+                        </select>
+                    </td>
                     <td>
                         <a href="javascript:void(0)" class="button button1 editBtn" id="edit-btn-{{$row->id}}" data-field-id="{{$row->id}}"> edit </a>
                         <a href="javascript:void(0)" class="button button4 deleteBtn" id="delete-btn-{{$row->id}}" data-field-id="{{$row->id}}"> Delete </a>

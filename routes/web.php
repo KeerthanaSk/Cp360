@@ -37,3 +37,4 @@ Route::post('addFormFields', 'FormController@fields')->name('addFormFields');
 Route::get('getFields/{form_id}', 'FormController@fieldDetail')->name('getFields');
 Route::get('deleteField/{id}', 'FormController@deleteField')->name('deleteField');
 Route::get('updateList/{id}', 'FormController@updateList')->name('updateList');
+Route::get('updateStatus/{id}', 'FormController@updateStatus')->name('updateStatus');

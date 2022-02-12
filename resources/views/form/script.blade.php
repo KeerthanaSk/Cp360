@@ -269,6 +269,24 @@
             });
         });
 
+        //update status
+        $('.status').on('change',function(){
+            var stat  = $(this).val();
+            var id    = $(this).attr('data_value');
+            var url = '<?php echo url('/updateStatus'); ?>'+'/'+id; 
+            $.ajax({
+                'type': 'GET',
+                'url' : url,
+                'data': {'stat': stat, 'id': id},
+                'cache': false,
+                'success': function (response) {
+                    if(response.status== "success"){
+                        alert('Status updated successfully')
+                    }
+                }
+            });
+        });
+
         //update form 
         $('#updateForm').submit(function(event)
         {

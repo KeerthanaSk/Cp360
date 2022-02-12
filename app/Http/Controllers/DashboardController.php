@@ -26,7 +26,8 @@ class DashboardController extends Controller
     {
         try {
             $modelForm  = DynamicForm::findOrFail($request->id);
-            $modelFormFields = DynamicFormField::where('form_id', $request->id)->orderBy('id','ASC')->get();
+            $modelFormFields = DynamicFormField::where('form_id', $request->id)
+                                ->where('status', 1)->orderBy('sort_order','ASC')->get();
             return view('dashboard._view', compact('modelFormFields', 'modelForm'));
         }catch (Exception $e) {
             return (new Responses)->sendError(404);
