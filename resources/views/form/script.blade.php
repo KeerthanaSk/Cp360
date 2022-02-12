@@ -74,44 +74,6 @@
                         alert(response.message)
 
                         $("#createFormFields")[0].reset();
-                        // $('.option').hide();
-                        // var len = 0;
-                        // $('#fieldTable tbody').empty(); // Empty <tbody>
-                        // if(response.fields != null){
-                        //     var data = response.fields;
-                        //     len = data.length;
-                        // }
-
-                        // if(len > 0){
-                        //     for(var i=0; i<len; i++){
-                        //         var id          = data[i].id;
-                        //         var label       = data[i].label;
-                        //         var type        = data[i].type;
-                        //         var is_required = data[i].is_required == 1 ? 'Yes': 'No';
-                        //         var sort_order  = data[i].sort_order == ''? 0 : data[i].sort_order;
-                        //         var status      = data[i].status == 1? 'Active' : 'Inactive';
-                                
-                        //         var edit_url     = '<?php echo url('/editFormFields'); ?>'+'/'+id; 
-                        //         var delete_url   = '<?php echo url('/editFormFields'); ?>'+'/'+id; 
-
-                        //         var tr_str = "<tr>" +
-                        //         "<td>" + (i+1) + "</td>" +
-                        //         "<td>" + label + "</td>" +
-                        //         "<td>" + getType(type) + "</td>" +
-                        //         "<td>" + is_required + "</td>" +
-                        //         "<td>" + sort_order + "</td>" +
-                        //         "<td>" + status + "</td>" +
-                        //         "<td>" + '<a href="javascript:void(0)" class="button button1 editBtn" id="edit-btn-'+id+'" data-field-id="'+id+'"> edit </a>' + 
-                        //             '<a href="javascript:void(0)" class="button button4 deleteBtn" id="edit-btn-'+id+'" data-field-id="'+id+'"> delete </a>'+"</tr>";
-                        //         $("#fieldTable tbody").append(tr_str);
-                        //     }
-                        // }else{
-                        //     var tr_str = "<tr>" +
-                        //         "<td align='center' colspan='7'>No record found.</td>" +
-                        //     "</tr>";
-
-                        //     $("#fieldTable tbody").append(tr_str);
-                        // }
                         location.reload();
                         
                     }else if(response.status == "warning"){
@@ -135,6 +97,7 @@
         $('.option').hide();
         $('#type').change(function() {
             if($(this).val() == 4 || $(this).val() == 5 || $(this).val() == 6) {
+                update_view(0);
                 $('.option').show();
             }else{
                 $('.option').hide();
@@ -170,10 +133,7 @@
                     $("#type").val(response.field[0].type); 
                     if(response.field[0].type == 4 || response.field[0].type == 5 || response.field[0].type == 6){
                         $('.option').show();
-                        $.each(response.options, function(index, value) {
-                            $("#type_value").val(value.type_value); 
-                            // Will stop running after "three"
-                        });
+                        update_view(response.field[0].id);
                     }else{
                         $('.option').hide();
                     }
@@ -209,53 +169,7 @@
             }
         });
 
-        //addmore rows
-        $('#add-acc').click(function(e){  
-			e.preventDefault();
-			var count   = parseInt($('.add_more_row').length);
-			var item_no = parseInt($('.rem-acc').length);
-            var id_no   = 1;
-            if(count  == 1){
-            	id_no = 1;
-            }else{
-            	id_no = count;
-            }
-		    var row   = parseInt($(".add_row_btn").val() + 1);
-		    $.ajax({
-		        url  : '{{ route("addOption")}}',
-		        type : 'GET',
-		        data : {'row':row, 'id_no':id_no},
-		        dataType:"json",
-		        beforeSend: function(response){
-		        },
-		        success: function(response){ 
-		            if(response.status=="success"){
-		                var data    = $(response.data);
-		                $("#addAcc .addholder").append(data);
-		            }
-		        }
-		    });
-		});
-       //remove dynamic rows 
-        $(document).on("click",".rem-acc",function(e) {
-			e.preventDefault();
-    		var row 	 = parseInt($(this).attr("data-row"));
-    		var numItems = $('.add_more_row').length
-		    if(confirm("{{'Are you sure ?'}}")){
-		        $("#"+row).remove();
-		        $.each($(".add_more_row"),function (i,el){
-			        $(this).attr('id',(i));
-			        $(this).attr('data-row',(i));
-			        $(this).find('#rem-acc').attr('data-row',(i));
-			        $(this).find('.option').attr('id','option_'+(i));
-			    });
-			    $.each($(".option"),function (i,el){
-			    	$(this).val(i + 1);
-			    });
-		    }
-		});
-
-        //sort_order
+        //sort order of form field
         $('.list_order').on('change',function(){			
             var order = $(this).val();
             var id    = $(this).attr('data_value');
@@ -269,7 +183,7 @@
             });
         });
 
-        //update status
+        //update form field status
         $('.status').on('change',function(){
             var stat  = $(this).val();
             var id    = $(this).attr('data_value');
@@ -287,7 +201,7 @@
             });
         });
 
-        //update form 
+        //update form name
         $('#updateForm').submit(function(event)
         {
             event.preventDefault();
@@ -330,6 +244,74 @@
                     }
                 },
             });
+        });
+
+        //option view in create and edit
+        function update_view(id) {
+			var item_no = parseInt($('.add_more_row').length+1);
+            var count   = parseInt($('.add_more_row').length);
+            var id_no = 1;
+            if(count==1){
+            	id_no = 1;
+            }else{
+            	id_no = count;
+            }
+		    var row   = item_no - 1;
+		    $.ajax({
+		        url  : '{{ route("optionRows")}}',
+		        type : 'GET',
+		        data : {'row':row,'item_no':item_no,'id_no':id_no, 'field_id':id},
+		        dataType:"json",
+		        beforeSend: function(response){
+		        },
+		        success: function(response){ 
+		            if(response.status=="success"){
+		                var data    = response.data;
+			            $(".option").append(data);
+		            }
+		        }
+		    });
+		}
+
+        //add more option
+        $(document).on("click",".add_row_btn",function(e) {
+            e.preventDefault();
+            var item_no = parseInt($('.add_more_row').length+1);
+            var count   = parseInt($('.add_more_row').length);
+            var id_no = 1;
+            if(count==1){
+                id_no = 1;
+            }else{
+                id_no = count;
+            }
+            $.ajax({
+                url  : '{{ route("addOption")}}',
+                type : 'GET',
+                data : {'row':item_no,'item_no':item_no,'id_no':id_no},
+                dataType:"json",
+                success: function(response){ 
+                    if(response.status=="success"){
+                        var data    = response.data;
+                        $(".option").append(data);
+                    }
+                }
+            });
+        });
+
+        //remove option
+        $(document).on("click",".rem-dep",function(e) {
+            e.preventDefault();
+            var row 	 = parseInt($(this).attr("data-row"));
+            var numItems = $('.add_more_row').length
+            if(confirm("{{'Are you sure ?'}}")){
+                $("#"+row).remove();
+                $.each($(".add_more_row"),function (i,el){
+                    $(this).attr('id',(i));
+                    $(this).attr('data-row',(i));
+                    $(this).find('.type_value').attr('id','type_value_'+(i+1));
+                    $(this).find('.rem-dep').attr('data-row',(i));
+                });
+            }
         });
     });
 </script>

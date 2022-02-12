@@ -31,6 +31,8 @@ Route::get('deleteForm/{id}', 'FormController@deleteForm')->name('deleteForm');
 //add more rows
 Route::get("addOption","FormController@addOptions")->name('addOption');
 
+Route::get("optionRows","FormController@optionRows")->name('optionRows');
+
 //add form fields
 Route::get('addFormFields/{form_id}', 'FormController@fields')->name('addFormFields');
 Route::post('addFormFields', 'FormController@fields')->name('addFormFields');

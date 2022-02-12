@@ -21,32 +21,10 @@ use App\Http\Models\StaticData;
                 <span id="type-error" class="error invalid-feedback" style="color:red;margin-left: 5%;font-size: 13px;"></span>
             </div>
         </div><br>
-
-        @php
-        $row = 0;
-        @endphp
-        <div class="col-sm-4 option">
-            <div class="row">
-                <div class="col-md-12">
-                    <div id="addAcc">
-                        @php
-                            $row = 0;
-                            $id_no = 0;
-                        @endphp
-                        <div class="addholder" id="addholder-{{$row}}" data-row="{{$row}}">
-                            <h3>Add Options</h3>
-                            @include('form._dynamic_form', ['row' => $row, 'modelOption' => $modelOption, 'id_no' => 0])
-                        </div>
-                    </div>
-                    <div class="row">
-                        <button type="submit" class="btn btn-primary md-btn" value="Submit" id="add-acc">
-                            <a href="#" class="add_row_btn" value="{{$id_no}}"></a>
-                            {{'Add More Option'}}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div><br>
+        
+        {{-- dynamic rows section statrt--}}
+        <div role="tabpanel" class="tab-pane fade in show active option" id="option"></div>
+        {{-- dynamic rows section end --}}
 
         <div class="col-sm-4">
             <div class="form-group">

@@ -21,8 +21,8 @@ class FormController extends Controller
         $this->middleware('auth');
     }
 
-   // Create Form
-   public function create(Request $request)
+    // Create Form
+    public function create(Request $request)
     {
     	try{
             $model   = new DynamicForm;
@@ -64,6 +64,8 @@ class FormController extends Controller
             return (new Responses)->sendError(404);
         }
     }
+
+    //get form field data for edit field
     public function fieldDetail(Request $request)
     {
         $id     = $request->id;
@@ -75,20 +77,23 @@ class FormController extends Controller
         );
         echo json_encode($data);
     }
+
     //add more rows 
     public static function addOptions(Request $request)
     {
         $data = array(
             'row'       => $request->row,
-            'modelOption' => new Option,
+            'model'     => new Option,
             'status'    => 'success',
+            'item_num'  => $request->item_no,
             'id_no'     => $request->id_no,
         );
         if (request()->ajax()) {
-            $html = \View::make('form._dynamic_form')->with($data)->render();
+            $html = \View::make('form.optionForm')->with($data)->render();
             return \Response::json([ 'row' => $request->row, 'data'=> $html, 'status' => 'success']);
         }
     }
+
     //manage form fields
     public function fields(Request $request){
         try{
@@ -116,20 +121,43 @@ class FormController extends Controller
                     return response()->json($response);
                 }else{
                     DB::beginTransaction();
+
+                    if($request->id != null){
+                        $model  = DynamicFormField::where('id', $request->id)->first();
+                        $model->modified_by = Auth::user()->id;
+                    }else{
+                        $model->modified_by = Auth::user()->id;
+                        $model->created_by  = Auth::user()->id;
+                    }
                     $options       = $request->type_value;
                     $filtered_data = array_filter($options);
                     $count         = count(array_filter($options));
 
                     $model->fill($request->all());
-                    $model->created_by  = Auth::user()->id;
-                    $model->modified_by = Auth::user()->id;
                     if($model->save()){
+                        $old_option_id = Option::where('form_field_id',$model->id)->get()->pluck('type_value','type_value')->toArray();
+
                         if($count>0){
                             foreach ($filtered_data as $key=> $value) {
-                                $modelOption                = new Option;
-                                $modelOption->form_field_id = $model->id;
-                                $modelOption->type_value    = $value;
-                                $modelOption->save();
+                                $id = $request->type_value[$key];
+                                if(in_array($id, $old_option_id)){ 
+                                    $modelOption  = Option::find($id);
+                                    if($modelOption){
+                                        $modelOption->type_value    = $value;
+                                        $modelOption->save();
+                                    }
+                                    unset($old_option_id[$id]);
+                                }else{
+                                    $modelOption                = new Option;
+                                    $modelOption->form_field_id = $model->id;
+                                    $modelOption->type_value    = $value;
+                                    $modelOption->save();
+                                }
+                            }
+                        }
+                        if($old_option_id != NULL){
+                            foreach ($old_option_id as $value) {
+                                Option::where(['form_field_id'=>$model->id,'type_value'=>$value])->delete();
                             }
                         }
                         DB::commit();
@@ -155,6 +183,7 @@ class FormController extends Controller
             return (new Responses)->sendError(404);
         }
     }
+
     //delete form field
     public function deleteField(Request $request)
     {
@@ -182,6 +211,7 @@ class FormController extends Controller
             return (new Responses)->sendError(404);
         }
     } 
+
     //view form
     public function view(Request $request)
     {
@@ -194,6 +224,7 @@ class FormController extends Controller
             return (new Responses)->sendError(404);
         }
     }
+
     //delete form field
     public function deleteForm(Request $request)
     {
@@ -226,7 +257,8 @@ class FormController extends Controller
             return (new Responses)->sendError(404);
         }
     } 
-    //update list
+
+    //update sort order
     public function updateList(Request $request)
     {
         try {
@@ -312,6 +344,42 @@ class FormController extends Controller
     		return view('form._edit', compact('model'));
     	} catch (Exception $e) { 
             return (new Responses)->sendError(404);
+        }
+    }
+
+    //dynamically update/save option to db
+    public function optionRows(Request $request)
+    {
+        $html   = '';
+        if($request->field_id != 0){
+            $model  = Option::where('form_field_id',$request->field_id)->get();
+            $count  = count($model);
+            if($count>0){
+                $j = 0;
+                for ($i=1; $i <= $count; $i++) { 
+                    $model_data = Option::findOrFail($model[$j]->id);
+                    $data = array(
+                        'row'       => $j,
+                        'model'     => $model_data,
+                        'status'    => 'success',
+                        'item_num'  => $i,
+                    );
+                    $html .= \View::make('form.optionForm')->with($data)->render();
+                    $j++;
+                }
+            }
+        }else{
+            $data = array(
+                'row'       => $request->row,
+                'model'     => new Option,
+                'status'    => 'success',
+                'item_num'  => $request->item_no,
+                'id_no'     => $request->id_no,
+            );
+            $html = \View::make('form.optionForm')->with($data)->render();
+        }
+        if (request()->ajax()) {
+            return \Response::json([ 'row' => $request->row, 'data'=> $html, 'status' => 'success']);
         }
     }
 }
