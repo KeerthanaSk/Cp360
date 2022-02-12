@@ -129,11 +129,12 @@ class FormController extends Controller
                         $model->modified_by = Auth::user()->id;
                         $model->created_by  = Auth::user()->id;
                     }
+                    $sort          = DynamicFormField::all()->count() + 1;
                     $options       = $request->type_value;
-                    $filtered_data = array_filter($options);
-                    $count         = count(array_filter($options));
-
+                    $filtered_data = $options != null ? array_filter($options) : null;
+                    $count         = $filtered_data != null ? count(array_filter($options)) : 0;
                     $model->fill($request->all());
+                    $model->sort_order = $sort;
                     if($model->save()){
                         $old_option_id = Option::where('form_field_id',$model->id)->get()->pluck('type_value','type_value')->toArray();
 

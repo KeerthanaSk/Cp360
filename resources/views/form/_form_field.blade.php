@@ -4,6 +4,7 @@ use App\Http\Models\StaticData;
 {{Form::model($model, array('id'=>'createFormFields','files'=>true))}}
 @csrf 
     <h3>Add fields for {{$modelForm->name}}</h3> <a href="{{route('home')}}">back</a>
+    <a href="{{route('viewForm', ['form_id'=>$modelForm->id])}}">view form</a>
 
     <div class="row">
         <div class="col-sm-4">
@@ -21,7 +22,7 @@ use App\Http\Models\StaticData;
                 <span id="type-error" class="error invalid-feedback" style="color:red;margin-left: 5%;font-size: 13px;"></span>
             </div>
         </div><br>
-        
+
         {{-- dynamic rows section statrt--}}
         <div role="tabpanel" class="tab-pane fade in show active option" id="option"></div>
         {{-- dynamic rows section end --}}
