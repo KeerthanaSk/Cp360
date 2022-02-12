@@ -121,7 +121,6 @@ class FormController extends Controller
                     return response()->json($response);
                 }else{
                     DB::beginTransaction();
-
                     if($request->id != null){
                         $model  = DynamicFormField::where('id', $request->id)->first();
                         $model->modified_by = Auth::user()->id;

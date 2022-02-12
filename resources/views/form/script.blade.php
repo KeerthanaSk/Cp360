@@ -96,6 +96,9 @@
         //add more section display
         $('.option').hide();
         $('#type').change(function() {
+            $(".add_more_row").each(function() {
+                $(this).remove();
+            });
             if($(this).val() == 4 || $(this).val() == 5 || $(this).val() == 6) {
                 update_view(0);
                 $('.option').show();
@@ -131,6 +134,9 @@
 
                     $("#label").val(response.field[0].label); 
                     $("#type").val(response.field[0].type); 
+                    $(".add_more_row").each(function() {
+                        $(this).remove();
+                    });
                     if(response.field[0].type == 4 || response.field[0].type == 5 || response.field[0].type == 6){
                         $('.option').show();
                         update_view(response.field[0].id);
